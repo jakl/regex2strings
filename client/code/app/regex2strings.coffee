@@ -39,12 +39,12 @@ generate=(rest, prefix='', cb=handleString)->
         start = Number start
         stop = start unless stop? #There wasn't a comma, so start and stop on the same length
         stop = undefined if stop is '' #There was a comma, so let stop be the default for permute
-        permute chars, rest, prefix, start, stop
+        permute chars, cb, rest, prefix, start, stop
 
     else if rest[0] is '+'
-        permute chars, rest[1..], prefix, 1
+        permute chars, cb, rest[1..], prefix, 1
     else if rest[0] is '*'
-        permute chars, rest[1..], prefix
+        permute chars, cb, rest[1..], prefix
     else if rest[0] is '?'
         generate rest[1..], prefix, cb
         generate rest[1..], prefix+c, cb for c in charsIn chars
@@ -54,11 +54,11 @@ generate=(rest, prefix='', cb=handleString)->
 
 #Cycle through each string produced by a char set followed by braces and pass it to generate as a prefix
 # [a-c]{0,4}
-permute=(chars, rest='', prefix='', start=0, stop=4)->
+permute=(chars, cb=handleString, rest='', prefix='', start=0, stop=4)->
     if start
-        permute chars, rest, prefix+c, start-1, stop-1 for c in charsIn chars
+        permute chars, cb, rest, prefix+c, start-1, stop-1 for c in charsIn chars
     else if stop
-        permute chars, rest, prefix+c, start, stop-1 for c in charsIn chars
+        permute chars, cb, rest, prefix+c, start, stop-1 for c in charsIn chars
         generate rest, prefix, cb
     else
         generate rest, prefix, cb
